@@ -14,8 +14,8 @@ public class BackendApplication implements CommandLineRunner {
   private FillDatabase fillDatabase;
 
   public static void main(String[] args) {
-    Dotenv dotenv = Dotenv.configure().directory("./").load();
-    dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
+//    Dotenv dotenv = Dotenv.configure().directory("./").load();
+//    dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
     SpringApplication.run(BackendApplication.class, args);
   }
 
