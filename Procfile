@@ -1,1 +1,1 @@
-web: ./mvnw clean package && java -jar target/*.jar
+web: java -jar target/backend-0.0.1-SNAPSHOT.war
