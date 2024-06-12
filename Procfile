@@ -1,1 +1,1 @@
-web: cd backend && ./mvnw clean package && java -jar target/*.jar
+web: ./mvnw clean package && java -jar target/*.jar
