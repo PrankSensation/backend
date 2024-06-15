@@ -32,15 +32,13 @@ public class AuthenticationController {
         String email = body.get("email").asText();
         String password = body.get("password").asText();
 
-
-
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Argon2PasswordEncoder argon2PasswordEncoder = new PasswordEncoder().argon2PasswordEncoder();
+        Argon2PasswordEncoder argon2PasswordEncoder = new PasswordEncoder();
 
         if (argon2PasswordEncoder.matches(password, user.getPassword())) {
             JWToken jwToken = new JWToken(user.getFirstName(), user.getUuid(), user.getRole());
