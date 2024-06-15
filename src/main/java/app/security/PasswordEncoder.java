@@ -1,17 +1,31 @@
 package app.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-public class PasswordEncoder extends Argon2PasswordEncoder{
+@Component
+public class PasswordEncoder {
 
+    @Value("${security.salt.length}")
+    private int saltLength;
 
-    public PasswordEncoder(int saltLength, int hashLength, int parallelism, int memory, int iterations) {
-        super(saltLength, hashLength, parallelism, memory, iterations);
+    @Value("${security.hash.length}")
+    private int hashLength;
 
-    }
+    @Value("${security.parallelism}")
+    private int parallelism;
 
-    public PasswordEncoder() {
-        super(System.getenv("SALT_LENGTH") != null ? Integer.parseInt(System.getenv("SALT_LENGTH")) : 32 , System.getenv("HASH_LENGTH") != null ? Integer.parseInt(System.getenv("HASH_LENGTH")) : 32 ,System.getenv("PARALLELISM") != null ? Integer.parseInt(System.getenv("PARALLELISM")) : 2 ,System.getenv("MEMORY") != null ? Integer.parseInt(System.getenv("MEMORY")) : 200 ,System.getenv("ITERATIONS") != null ? Integer.parseInt(System.getenv("ITERATIONS")) : 2 );
+    @Value("${security.memory}")
+    private int memory;
+
+    @Value("${security.iterations}")
+    private int iterations;
+
+    @Bean
+    public Argon2PasswordEncoder argon2PasswordEncoder() {
+        return new Argon2PasswordEncoder(saltLength, hashLength, parallelism, memory, iterations);
     }
 }

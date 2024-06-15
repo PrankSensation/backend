@@ -40,7 +40,7 @@ public class AuthenticationController {
             return ResponseEntity.notFound().build();
         }
 
-        Argon2PasswordEncoder argon2PasswordEncoder = new PasswordEncoder();
+        Argon2PasswordEncoder argon2PasswordEncoder = new PasswordEncoder().argon2PasswordEncoder();
 
         if (argon2PasswordEncoder.matches(password, user.getPassword())) {
             JWToken jwToken = new JWToken(user.getFirstName(), user.getUuid(), user.getRole());
