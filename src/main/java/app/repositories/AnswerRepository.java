@@ -1,6 +1,7 @@
 package app.repositories;
 
 import app.models.Answer;
+import app.models.Tip;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -40,6 +41,28 @@ public class AnswerRepository {
         }
 
         return resultList;
+    }
+
+    public List<Tip> getShortTermTips(String attemptUuid) {
+        int max_points = this.getMaxPointsInQuestionnaireByAttempt(attemptUuid);
+
+        String queryString = "SELECT NEW " +
+                "app.models.Tip (r.question.questionCategory.category.title, r.question.questionCategory.title, r.answer.tip) " +
+                "FROM Result r WHERE r.attempt.uuid = :attemptUuid AND SIZE(r.question.answers) > 0 " +
+                "ORDER BY r.question.questionCategory.category.weight *  (:max_points - r.answer.points) DESC";
+        TypedQuery<Tip> query = entityManager.createQuery(queryString, Tip.class);
+        query.setParameter("attemptUuid", attemptUuid);
+        query.setParameter("max_points", max_points);
+
+        return query.getResultList();
+    }
+
+    private Integer getMaxPointsInQuestionnaireByAttempt(String attemptUuid) {
+        String queryString = "SELECT MAX(a.points) FROM Answer a JOIN Result r ON a.uuid = r.answer.uuid WHERE r.attempt.uuid = :attemptUuid";
+        TypedQuery<Integer> query = entityManager.createQuery(queryString, Integer.class);
+        query.setParameter("attemptUuid", attemptUuid);
+
+        return query.getSingleResult();
     }
 
 }

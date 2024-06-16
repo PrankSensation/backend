@@ -62,11 +62,11 @@ public class AnswerRepositoryTest {
 
         Sector sector = sectorRepository.create(new Sector("test"));
 
-        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test",sector,"test","test");
+        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         user1.setRandomUuid();
         userRepository.create(user1);
 
-        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test","test","test");
+        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         invalidUser1.setRandomUuid();
         userRepository.create(invalidUser1);
 

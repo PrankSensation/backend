@@ -18,10 +18,10 @@ public class SectorRepository {
     private EntityManager entityManager;
 
     public List<Sector> findAll() {
-        TypedQuery<Sector> query = entityManager.createQuery("select sector from Sector sector", Sector.class);
+        TypedQuery<Sector> query = entityManager.createQuery(
+                "select new app.models.Sector( s.title, s.best_organisation, s.person_of_intrest, s.researcher, s.link, s.uuid) from Sector s", Sector.class);
         return query.getResultList();
     }
-
     public Sector create(Sector sector) {
         entityManager.persist(sector);
         return sector;

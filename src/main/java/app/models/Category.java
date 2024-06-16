@@ -38,6 +38,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "category")
+    @OrderBy("level ASC")
     private List<StrengthOrWeakness> strengthOrWeaknesses = new ArrayList<>();
 
     public Category() {
@@ -113,6 +114,11 @@ public class Category {
 
     public void setStrengthOrWeaknesses(List<StrengthOrWeakness> strengthOrWeaknesses) {
         this.strengthOrWeaknesses = strengthOrWeaknesses;
+    }
+
+    @Override
+    public String toString() {
+        return this.title;
     }
 }
 

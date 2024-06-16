@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Map;
+
 @Entity
 public class TipText {
 
@@ -23,6 +25,10 @@ public class TipText {
     private String text;
 
     public TipText() {
+    }
+
+    public TipText(String text) {
+        this.text = text;
     }
 
     public String getUuid() {
@@ -55,5 +61,13 @@ public class TipText {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getTextWithReplacedPlaceholders(Map<String, String> placeholder_mapping){
+        String text_template = this.text;
+        for (Map.Entry<String, String> entry : placeholder_mapping.entrySet()) {
+            text_template = text_template.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
+        }
+        return text_template;
     }
 }

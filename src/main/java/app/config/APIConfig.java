@@ -18,11 +18,11 @@ public class APIConfig implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-            .allowedOrigins("https://ffort-frontend-79acbb41c80b.herokuapp.com")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
-            .exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
-            .allowCredentials(true);
+      .allowedOriginPatterns("http://localhost:*")
+      .allowedMethods("GET", "POST", "PUT", "DELETE","OPTIONS")
+      .allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
+      .exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
+      .allowCredentials(true);
   }
   @Value("${jwt.issuer}")
   private String issuer;

@@ -46,7 +46,6 @@ public class Question {
     private Questionnaire questionnaire;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
-    @JsonManagedReference(value = "question")
     private List<Result> results;
 
     public Question() {

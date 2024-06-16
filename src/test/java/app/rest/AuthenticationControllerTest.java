@@ -62,7 +62,7 @@ public class AuthenticationControllerTest {
         String email = "test@example.com";
         String password = "password";
         Sector sector = sectorRepository.create(new Sector("test"));
-        User user = new User("name", "name", email, password, Roles.USER,"test",sector,"test","test");
+        User user = new User("name", "name", email, password, Roles.USER,"test",sector,"test","test","test","test");
 
         // Mock userRepository behavior
         when(userRepository.findByEmail(email)).thenReturn(user);
@@ -104,7 +104,7 @@ public class AuthenticationControllerTest {
         // Prepare test data
         String email = "test@example.com";
         String password = "invalid_password";
-        User user = new User("name", "name", email, "password", Roles.USER,"test","test","test");
+        User user = new User("name", "name", email, "password", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
 
         // Mock userRepository behavior
         when(userRepository.findByEmail(email)).thenReturn(user);
@@ -147,7 +147,7 @@ public class AuthenticationControllerTest {
         String email = "test@example.com";
         String password = "password";
         Sector sector = sectorRepository.create(new Sector("test"));
-        User user = new User("name", "name", email, password, Roles.USER,"test",sector,"test","test");
+        User user = new User("name", "name", email, password, Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
 
         // Mock userRepository behavior
         when(userRepository.findByEmail(email)).thenReturn(user);

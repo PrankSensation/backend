@@ -21,6 +21,10 @@ public class StrengthOrWeaknessRepository {
         TypedQuery<StrengthOrWeakness> query = entityManager.createQuery("select strengthOrWeakness from StrengthOrWeakness strengthOrWeakness", StrengthOrWeakness.class);
         return query.getResultList();
     }
+    public List<StrengthOrWeakness> findAllCategories() {
+        TypedQuery<StrengthOrWeakness> query = entityManager.createQuery("select s.category from StrengthOrWeakness s", StrengthOrWeakness.class);
+        return query.getResultList();
+    }
 
     public StrengthOrWeakness create(StrengthOrWeakness strengthOrWeakness) {
         entityManager.persist(strengthOrWeakness);

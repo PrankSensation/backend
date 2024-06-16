@@ -38,17 +38,19 @@ public class User {
     @JsonView(view.User.class)
     private Roles role;
 
-    @JsonView(view.User.class)
-    private Boolean useData;
 
     @JsonView(view.User.class)
     private String income;
 
     @JsonView(view.User.class)
     private String companySize;
-
+    @JsonView(view.User.class)
+    private String companySizeMarketing;
     @JsonView(view.User.class)
     private String companyName;
+
+    @JsonView(view.User.class)
+    private String purchaseQuotient;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonView(view.User.class)
@@ -60,7 +62,7 @@ public class User {
     private List<Attempt> attempts = new ArrayList<>();
 
     //  Constructor
-    public User(String firstName, String lastName, String email, String password, Roles role, String income, Sector sector, String companySize, String companyName) {
+    public User(String firstName, String lastName, String email, String password, Roles role, String income, Sector sector, String companySize, String companySizeMarketing, String companyName,String purchaseQuotient) {
         this.uuid = generateUuid();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,20 +72,11 @@ public class User {
         this.income = income;
         this.sector = sector;
         this.companySize = companySize;
+        this.companySizeMarketing = companySizeMarketing;
         this.companyName = companyName;
+        this.purchaseQuotient=purchaseQuotient;
     }
 
-    public User(String firstName, String lastName, String email, String password, Roles role, String income, String companySize, String companyName) {
-        this.uuid = generateUuid();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = hashPassword(password);
-        this.role = role;
-        this.income = income;
-        this.companySize = companySize;
-        this.companyName = companyName;
-    }
 
     public User() {
         this.uuid = generateUuid();
@@ -99,13 +92,19 @@ public class User {
         PasswordEncoder passwordEncoder = new PasswordEncoder();
         return passwordEncoder.encode(password);
     }
-
+    public String getCompanySizeMarketing(){
+        return companySizeMarketing;
+    }
     public String getCompanyName(){
         return this.companyName;
     }
     //  Getters and Setters
     public String getUuid() {
         return uuid;
+    }
+
+    public String getPurchaseQuotient() {
+        return purchaseQuotient;
     }
 
     public void setRandomUuid() {
@@ -118,6 +117,10 @@ public class User {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public void setSector(Sector sector) {
+        this.sector = sector;
     }
 
     public String getLastName() {
@@ -162,5 +165,37 @@ public class User {
 
     public void setRole(Roles role) {
         this.role = role;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setIncome(String income) {
+        this.income = income;
+    }
+
+    public void setCompanySize(String companySize) {
+        this.companySize = companySize;
+    }
+
+    public void setCompanySizeMarketing(String companySizeMarketing) {
+        this.companySizeMarketing = companySizeMarketing;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setPurchaseQuotient(String purchaseQuotient) {
+        this.purchaseQuotient = purchaseQuotient;
+    }
+
+    public List<Attempt> getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(List<Attempt> attempts) {
+        this.attempts = attempts;
     }
 }

@@ -29,6 +29,9 @@ public class ResultRepositoryTest {
     QuestionnaireRepository questionnaireRepository;
 
     @Autowired
+    SectorRepository sectorRepository;
+
+    @Autowired
     AnswerRepository answerRepository;
 
     @Autowired
@@ -50,10 +53,10 @@ public class ResultRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test","test","test");
+        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         userRepository.create(user1);
 
-        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test","test","test");
+        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         userRepository.create(invalidUser1);
 
         answer1 = new Answer("test", 5, "test", 1);
@@ -176,7 +179,6 @@ public class ResultRepositoryTest {
     @Test
     public void validUserIdAndQuestionnaireIdShouldReturnAttempt() {
         List<Attempt> results = resultRepository.getAttemptFromLatestQuestionnaireByUserIdAndAttempt(user1.getUuid(), questionnaire1.getUuid(), 1);
-        System.out.println(results);
         assertNotNull(results);
         assertFalse(results.isEmpty());
     }

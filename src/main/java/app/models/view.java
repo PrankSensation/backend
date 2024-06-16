@@ -15,7 +15,9 @@ public interface view {
 
     interface Questionnaire extends Question {}
 
-    interface Result extends Id{}
+    interface Result extends Id {}
 
-    interface Attempt extends Questionnaire, Result {}
+    interface Attempt_info extends Id {}
+
+    interface Attempt extends Attempt_info ,Questionnaire, Result {}
 }

@@ -1,9 +1,6 @@
 package app.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -27,11 +24,18 @@ public class SubCategory {
     @JsonIgnoreProperties("subCategories")
     private Category category;
 
-    @OneToMany(mappedBy = "questionCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "questionCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("questionCategory")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Question> questions = new ArrayList<>();
 
     public SubCategory() {
+    }
+
+    public SubCategory(String uuid, String title, Category category) {
+        this.uuid = uuid;
+        this.title = title;
+        this.category = category;
     }
 
     public SubCategory(String title) {

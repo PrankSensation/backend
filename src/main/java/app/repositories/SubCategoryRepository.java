@@ -43,4 +43,10 @@ public class SubCategoryRepository {
     public void delete(SubCategory subCategory) {
         entityManager.remove(subCategory);
     }
+
+    public List<SubCategory> findAllSorted() {
+        TypedQuery<SubCategory> query = entityManager.createQuery("SELECT sc.uuid, sc.title, c FROM SubCategory sc JOIN sc.category c ORDER BY c.title", SubCategory.class);
+
+        return query.getResultList();
+    }
 }

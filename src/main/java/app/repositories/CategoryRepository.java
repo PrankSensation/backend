@@ -43,4 +43,11 @@ public class CategoryRepository {
     public void delete(Category category) {
         entityManager.remove(category);
     }
+
+    public Category get_category_by_title(String title){
+        TypedQuery<Category> query = entityManager.createQuery("SELECT category " +
+                "FROM Category category WHERE category.title = :title", Category.class);
+        query.setParameter("title", title);
+        return query.getSingleResult();
+    }
 }

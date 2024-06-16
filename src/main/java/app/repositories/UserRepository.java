@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.models.Sector;
 import app.models.User;
 import app.models.view;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -43,6 +44,22 @@ public class UserRepository {
         return entityManager.find(User.class, uuid);
     }
 
+    public Sector findSectorByUserUuid(String userUuid) {
+        User user = entityManager.find(User.class, userUuid);
+        if (user != null) {
+            return user.getSector();
+        } else {
+            return null;
+        }
+    }
+
+
+    public User findByUuidWithSector(String uuid) {
+        String jpql = "SELECT u FROM User u JOIN FETCH u.sector WHERE u.uuid = :uuid";
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        query.setParameter("uuid", uuid);
+        return query.getSingleResult();
+    }
     public User findByEmail(String email) {
         TypedQuery<User> query = entityManager.createQuery("select u from User u where email = :email", User.class);
         query.setParameter("email", email);
@@ -56,6 +73,13 @@ public class UserRepository {
     public User update(User user) {
         entityManager.merge(user);
         return user;
+    }
+
+    public Sector getUserSector(String uuid) {
+        String jpql = "SELECT u.sector FROM User u WHERE u.uuid = :uuid";
+        TypedQuery<Sector> query = entityManager.createQuery(jpql, Sector.class);
+        query.setParameter("uuid", uuid);
+        return query.getSingleResult();
     }
 
 

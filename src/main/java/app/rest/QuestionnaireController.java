@@ -89,7 +89,7 @@ public class QuestionnaireController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/questionnaire/active")
+    @GetMapping("/active")
     public ResponseEntity<Questionnaire> getActive(){
         try{
             Questionnaire active_questionnaire = questionnaireRepository.getActive();
@@ -134,7 +134,7 @@ public class QuestionnaireController {
         }
     }
 
-    @GetMapping("/list")
+    @GetMapping("/questionnaire/list")
     public ResponseEntity<List<Questionnaire>> list() {
         try {
             List<Questionnaire> questionnaireList = questionnaireRepository.getQuestionnaireList();

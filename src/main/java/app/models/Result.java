@@ -1,11 +1,9 @@
 package app.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -22,14 +20,14 @@ public class Result {
     @JsonView(view.Result.class)
     private Attempt attempt;
 
-    @ManyToOne
+    @ManyToOne()
     @JsonView(view.Result.class)
-    @JsonBackReference(value = "answer")
+    @JsonIgnoreProperties("results")
     private Answer answer;
 
-    @ManyToOne
+    @ManyToOne()
     @JsonView(view.Result.class)
-    @JsonBackReference(value = "question")
+    @JsonIgnoreProperties("results")
     private Question question;
 
     @JsonView(view.Result.class)

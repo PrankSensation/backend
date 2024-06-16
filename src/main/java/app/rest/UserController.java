@@ -2,9 +2,11 @@ package app.rest;
 
 import app.exeptions.AlreadyExistsException;
 import app.models.Roles;
+import app.models.Sector;
 import app.models.User;
 import app.models.view;
 import app.repositories.EntityRepository;
+import app.repositories.SectorRepository;
 import app.repositories.UserRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class UserController implements EntityRepository<User> {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SectorRepository sectorRepository;
 
     @GetMapping("/admin/user/all")
     @JsonView(view.User.class)
@@ -73,11 +77,19 @@ public class UserController implements EntityRepository<User> {
     @GetMapping({"/user/{uuid}", "/personal/user/{uuid}"})
     @JsonView(view.User.class)
     public User findByUuid(@PathVariable String uuid) throws ChangeSetPersister.NotFoundException {
-        User response = userRepository.findByUuid(uuid);
+        User response = userRepository.findByUuidWithSector(uuid);
         if (response == null) throw new ChangeSetPersister.NotFoundException();
-
         return response;
     }
+
+    @GetMapping({"/user/{uuid}", "/sector/personal/user/{uuid}"})
+    @JsonView(view.User.class)
+    public Sector findSectorByUuid(@PathVariable String uuid) throws ChangeSetPersister.NotFoundException {
+        Sector response = userRepository.findSectorByUserUuid(uuid);
+        if (response == null) throw new ChangeSetPersister.NotFoundException();
+        return response;
+    }
+
 
     @GetMapping("/user/email/{email}")
     @JsonView(view.User.class)
@@ -101,7 +113,15 @@ public class UserController implements EntityRepository<User> {
     @JsonView(view.User.class)
     @PutMapping("/personal/user/{uuid}")
     public ResponseEntity<User> updateUser(@RequestBody User user) throws ChangeSetPersister.NotFoundException {
-       User response = userRepository.update(user);
+       User existingUser = userRepository.findByUuid(user.getUuid());
+       existingUser.setSector(user.getSector());
+       existingUser.setCompanyName(user.getCompanyName());
+       existingUser.setCompanySize(user.getCompanySize());
+       existingUser.setCompanySizeMarketing(user.getCompanySizeMarketing());
+       existingUser.setIncome(user.getIncome());
+       existingUser.setPurchaseQuotient(user.getPurchaseQuotient());
+       user.setPurchaseQuotient(user.getPurchaseQuotient());
+       User response = userRepository.update(existingUser);
        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

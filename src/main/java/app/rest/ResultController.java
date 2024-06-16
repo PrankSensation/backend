@@ -2,6 +2,8 @@ package app.rest;
 
 import app.models.*;
 import app.repositories.ResultRepository;
+import app.repositories.TipTextRepository;
+import app.repositories.UserRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +23,12 @@ public class ResultController {
 
     @Autowired
     private ResultRepository resultRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TipTextRepository tipTextRepository;
 
     @GetMapping()
     public ResponseEntity<List<Result>> findAll(){
@@ -33,6 +41,10 @@ public class ResultController {
         Result savedResult = resultRepository.create(result);
         URI location = new URI("/result/" + savedResult.getUuid());
         return ResponseEntity.created(location).body(savedResult);
+    }
+    @GetMapping("/admin")
+    public List<Object[]> findAllAdmin(){
+        return resultRepository.findAllAdmin();
     }
 
     @GetMapping("/personal/{uuid}")
@@ -68,7 +80,7 @@ public class ResultController {
 
         Map<String, Double> averagePointsPerCategory = resultList.stream()
                 .collect(Collectors.toMap(
-                        array -> ((QuestionCategory) array[0]).toString(),
+                        array -> ((String) array[0]),
                         array -> (Double) array[1]
                 ));
 
@@ -77,8 +89,7 @@ public class ResultController {
 
     @GetMapping("/sector_name/personal/{userUuid}/{attemptUuid}")
     public ResponseEntity<List<String>> getSectorNameByUserIdAndAttemptId(@PathVariable String userUuid, @PathVariable String attemptUuid){
-        List<String> sectors = resultRepository.getSectorNameByUserIdAndAttemptId(userUuid, attemptUuid);
-        System.out.println("sector name: " + sectors);
+        List<String> sectors = resultRepository.getSectorNameByUserIdAndAttemptId(userUuid);
         return ResponseEntity.ok(sectors);
     }
 
@@ -131,16 +142,16 @@ public class ResultController {
 
         Map<String, Double> averagePointsPerCategory = results.stream()
                 .collect(Collectors.toMap(
-                        array -> ((QuestionCategory) array[0]).toString(),
+                        array -> ((String) array[0]),
                         array -> (Double) array[1]
                 ));
 
         return ResponseEntity.ok(averagePointsPerCategory);
     }
 
-    @GetMapping("/sector_results/{questionnaireUuid}/{attemptUuid}")
-    public ResponseEntity<Map<String, Double>> getSectorResultsForLatestAttempts(@PathVariable String attemptUuid, @PathVariable String questionnaireUuid){
-        List<Object[]> results = resultRepository.getSectorResultsForLatestAttempts(attemptUuid, questionnaireUuid);
+    @GetMapping("/sector_results/{attemptUuid}")
+    public ResponseEntity<Map<String, Double>> getSectorResultsForLatestAttempts(@PathVariable String attemptUuid){
+        List<Object[]> results = resultRepository.getSectorResultsForLatestAttempts(attemptUuid);
 
         if (results == null || results.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -148,7 +159,7 @@ public class ResultController {
 
         Map<String, Double> averagePointsPerCategory = results.stream()
                 .collect(Collectors.toMap(
-                        array -> ((QuestionCategory) array[0]).toString(),
+                        array -> ((String) array[0]),
                         array -> (Double) array[1]
                 ));
 

@@ -28,6 +28,14 @@ public class StrengthOrWeakness {
     public StrengthOrWeakness() {
     }
 
+    public StrengthOrWeakness(String uuid, String title, String statement, int level, Category category) {
+        this.uuid = uuid;
+        this.title = title;
+        this.statement = statement;
+        this.level = level;
+        this.category = category;
+    }
+
     public StrengthOrWeakness(String title, String statement, int level) {
         this.title = title;
         this.statement = statement;

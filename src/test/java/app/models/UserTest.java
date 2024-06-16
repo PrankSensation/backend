@@ -17,7 +17,7 @@ public class UserTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User("firstName", "lastName", "email@mail.com", "password", Roles.USER,"test","test","test");
+        user1 = new User("firstName", "lastName", "email@mail.com", "password", Roles.USER,"test",new Sector("kaas"),"test","test","test","test");
         passwordEncoder = new PasswordEncoder();
     }
 

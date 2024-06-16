@@ -39,11 +39,11 @@ public class UserRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User("firstName", "lastName", "email1@mail.com", "password", Roles.USER,"test","test","test");
+        user1 = new User("firstName", "lastName", "email1@mail.com", "password", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         user1.setRandomUuid();
         user1.setPassword(user1.hashPassword("password"));
 
-        user2 = new User("firstName2", "lastName2", "email2@mail.com", "password2", Roles.USER,"test","test","test");
+        user2 = new User("firstName2", "lastName2", "email2@mail.com", "password2", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         user2.setRandomUuid();
         user2.setPassword(user2.hashPassword("password2"));
 
@@ -60,7 +60,7 @@ public class UserRepositoryTest {
     @Test
     public void can_add_user() {
         Sector sector = sectorRepository.create(new Sector("test"));
-        User newUser = new User("firstName", "lastName", "email@mail.com", "password", Roles.USER,"test",sector,"test","test");
+        User newUser = new User("firstName", "lastName", "email@mail.com", "password", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         User response = userRepository.create(newUser);
 
         assertNotNull(response);

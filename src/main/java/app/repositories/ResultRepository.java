@@ -25,6 +25,23 @@ public class ResultRepository {
         TypedQuery<Result> query = entityManager.createQuery("select result from Result result", Result.class);
         return query.getResultList();
     }
+    public List<Object[]> findAllAdmin() {
+        TypedQuery<Object[]> query = entityManager.createQuery(
+                "SELECT result.uuid, answer.points, " +
+                        "questionnaire.title AS questionnaire_title, " +
+                        "questionnaire.date, sector.title AS sector_title, " +
+                        "category.title,user.companyName, user.uuid  " +
+                        "FROM Result result " +
+                        "INNER JOIN Answer answer ON result.answer.uuid = answer.uuid " +
+                        "INNER JOIN Question question ON result.question.uuid = question.uuid " +
+                        "INNER JOIN Questionnaire questionnaire ON question.questionnaire.uuid = questionnaire.uuid " +
+                        "INNER JOIN Attempt attempt ON result.attempt.uuid = attempt.uuid " +
+                        "INNER JOIN User user ON attempt.user.uuid = user.uuid " +
+                        "INNER JOIN Sector sector ON user.sector.uuid = sector.uuid "+
+                        "INNER JOIN SubCategory subCategory on question.questionCategory.uuid = subCategory.uuid " +
+                        "INNER JOIN Category category on subCategory.category.uuid = category.uuid", Object[].class);
+        return query.getResultList();
+    }
 
     public Result create(Result result) {
         entityManager.persist(result);
@@ -155,14 +172,14 @@ public class ResultRepository {
 
     //OwnAverages
     public List<Object[]> getUserResultsByAttemptId(String attemptUuid){
-        String queryString = "SELECT q.questionCategory, ROUND(AVG(a.points), 0) " +
+        String queryString = "SELECT q.questionCategory.category.title, ROUND(AVG(a.points), 2) " +
                 "FROM Result r " +
                 "JOIN Answer a ON r.answer.uuid = a.uuid " +
                 "JOIN Question q ON a.question.uuid = q.uuid " +
                 "WHERE r.attempt.uuid = :attemptUuid " +
                 "AND r.result IS NULL " +
                 "AND a.points > 0 " +
-                "GROUP BY q.questionCategory";
+                "GROUP BY q.questionCategory.category";
 
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         query.setParameter("attemptUuid", attemptUuid);
@@ -208,14 +225,14 @@ public class ResultRepository {
             return null;
         }
 
-        String queryString = "SELECT q.questionCategory, ROUND(AVG(a.points), 0) " +
+        String queryString = "SELECT q.questionCategory.category.title, ROUND(AVG(a.points), 2) " +
                 "FROM Result r " +
                 "JOIN Answer a ON r.answer.uuid = a.uuid " +
                 "JOIN Question q ON a.question.uuid = q.uuid " +
                 "WHERE r.result IS NULL " +
                 "AND r.attempt.uuid IN :attemptUuids " +
                 "AND a.points > 0 " +
-                "GROUP BY q.questionCategory";
+                "GROUP BY q.questionCategory.category.title";
 
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         query.setParameter("attemptUuids", Arrays.asList(attemptUuids));
@@ -230,18 +247,13 @@ public class ResultRepository {
     }
 
 
-    public List<String> getSectorNameByUserIdAndAttemptId(String userUuid, String attemptUuid){
-        String queryString = "SELECT a.answer " +
-                "FROM Result r " +
-                "JOIN Question q ON r.question.uuid = q.uuid " +
-                "JOIN Answer a ON r.answer.uuid = a.uuid " +
-                "WHERE r.attempt.user.uuid = :userUuid " +
-                "AND r.attempt.uuid = :attemptUuid " +
-                "AND q.questionCategory = 'Sector'";
+    public List<String> getSectorNameByUserIdAndAttemptId(String userUuid){
+        String queryString = "SELECT u.sector.title " +
+                "FROM User u " +
+                "WHERE u.uuid = :userUuid ";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("userUuid", userUuid);
-        query.setParameter("attemptUuid", attemptUuid);
 
         List<String> answerValues = query.getResultList();
 
@@ -253,12 +265,7 @@ public class ResultRepository {
     }
 
     public List<String> getSectorAnswerIdByAttemptUuid(String attemptUuid) {
-        String queryString = "SELECT a.uuid " +
-                "FROM Result r " +
-                "JOIN Answer a ON r.answer.uuid = a.uuid " +
-                "JOIN Question q ON a.question.uuid = q.uuid " +
-                "WHERE r.attempt.uuid = :attemptUuid " +
-                "AND q.questionCategory = 'Sector'";
+        String queryString = "SELECT a.user.sector.uuid FROM Attempt a WHERE a.uuid = :attemptUuid";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("attemptUuid", attemptUuid);
@@ -272,7 +279,7 @@ public class ResultRepository {
         return answerUuids;
     }
 
-    public List<Object[]> getLatestSectorAttemptsByAnswerAndQuestionnaireId(String attemptUuid, String questionnaireUuid) {
+    public List<Object[]> getLatestSectorAttemptsByAnswerAndQuestionnaireId(String attemptUuid) {
         List<String> answerUuid = getSectorAnswerIdByAttemptUuid(attemptUuid);
 
         if (answerUuid == null) {
@@ -284,17 +291,14 @@ public class ResultRepository {
                 "    SELECT a.user.uuid AS uuid, MAX(a.date) AS latest_date " + // Added alias "uuid" here
                 "    FROM Attempt a " +
                 "    JOIN Result r ON a.uuid = r.attempt.uuid " +
-                "    WHERE r.answer.uuid = :answerUuid " +
-                "    AND a.questionnaire.uuid = :questionnaireUuid " +
+                "    WHERE r.attempt.user.sector.uuid = :answerUuid " +
                 "    GROUP BY a.user.uuid " +
                 ") la " +
                 "JOIN Attempt a ON la.uuid = a.user.uuid AND la.latest_date = a.date " +
-                "WHERE a.is_completed = TRUE " +
-                "AND a.questionnaire.uuid = :questionnaireUuid";
+                "WHERE a.is_completed = TRUE ";
 
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         query.setParameter("answerUuid", answerUuid.get(0));
-        query.setParameter("questionnaireUuid", questionnaireUuid);
 
         List<Object[]> result = query.getResultList();
 
@@ -306,9 +310,8 @@ public class ResultRepository {
     }
 
 
-    public List<Object[]> getSectorResultsForLatestAttempts(String attemptUuid, String questionnaireUuid){
-        List<Object[]> attemptUuids = getLatestSectorAttemptsByAnswerAndQuestionnaireId(attemptUuid, questionnaireUuid);
-        System.out.println("attemptUuids" + Arrays.toString(attemptUuids.get(0)));
+    public List<Object[]> getSectorResultsForLatestAttempts(String attemptUuid){
+        List<Object[]> attemptUuids = getLatestSectorAttemptsByAnswerAndQuestionnaireId(attemptUuid);
         if (attemptUuids == null) {
             return null;
         }
@@ -317,14 +320,14 @@ public class ResultRepository {
                 .map(attempt -> (String) attempt[0])
                 .toList();
 
-        String queryString = "SELECT q.questionCategory, ROUND(AVG(a.points), 0) " +
+        String queryString = "SELECT q.questionCategory.category.title, ROUND(AVG(a.points), 2) " +
                 "FROM Result r " +
                 "JOIN Answer a ON r.answer.uuid = a.uuid " +
                 "JOIN Question q ON a.question.uuid = q.uuid " +
                 "WHERE r.result IS NULL " +
                 "AND r.attempt.uuid IN :attemptUuids " +
                 "AND a.points > 0 " +
-                "GROUP BY q.questionCategory";
+                "GROUP BY q.questionCategory.category.title";
 
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         query.setParameter("attemptUuids", attemptUuidsList);

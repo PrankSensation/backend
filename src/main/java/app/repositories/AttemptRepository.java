@@ -51,4 +51,10 @@ public class AttemptRepository {
         query.setParameter("userUuid", userUuid);
         return query.getSingleResult();
     }
+
+    public List<Attempt> findCompletedAttemptsByUserUuid(String userUuid){
+        TypedQuery<Attempt> query = entityManager.createQuery("select attempt from Attempt attempt where attempt.user.uuid = :userUuid and attempt.is_completed = TRUE", Attempt.class);
+        query.setParameter("userUuid", userUuid);
+        return query.getResultList();
+    }
 }

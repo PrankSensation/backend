@@ -31,6 +31,9 @@ public class AnswerControllerTest {
     UserRepository userRepository;
 
     @Autowired
+    SectorRepository sectorRepository;
+
+    @Autowired
     QuestionnaireRepository questionnaireRepository;
 
     @Autowired
@@ -58,10 +61,10 @@ public class AnswerControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test","test","test");
+        user1 = new User("test", "test", "test@gmail.com", "test", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         userRepository.create(user1);
 
-        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test","test","test");
+        invalidUser1 = new User("test2", "test2", "test2@gmail.com", "test2", Roles.USER,"test",sectorRepository.create(new Sector("test")),"test","test","test","test");
         userRepository.create(invalidUser1);
 
         answer1 = new Answer("test", 5, "test", 1);

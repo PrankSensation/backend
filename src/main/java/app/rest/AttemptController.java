@@ -7,6 +7,7 @@ import app.models.view;
 import app.repositories.AttemptRepository;
 import app.repositories.QuestionnaireRepository;
 import app.repositories.UserRepository;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Comparator;
+import java.util.List;
 
 @RestController
 @RequestMapping("/attempt")
@@ -88,6 +91,17 @@ public class AttemptController {
         } catch (NoResultException e) {
             return ResponseEntity.noContent().build();
         }
+    }
+
+    @GetMapping("/personal/completed/{userUuid}")
+    @JsonView(view.Attempt_info.class)
+    public ResponseEntity<List<Attempt>> getCompletedAttemptsByUserUuid(@PathVariable String userUuid){
+        List<Attempt> attempts = attemptRepository.findCompletedAttemptsByUserUuid(userUuid);
+        if (attempts.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        attempts.sort(Comparator.comparing(Attempt::getDate).reversed());
+        return ResponseEntity.ok(attempts);
     }
 
     @DeleteMapping("/personal/{userUuid}")

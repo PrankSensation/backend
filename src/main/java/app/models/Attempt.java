@@ -40,6 +40,7 @@ public class Attempt {
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(view.Attempt_info.class)
     private Date date;
 
     public Attempt() {
