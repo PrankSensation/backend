@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class SectorController {
@@ -38,8 +37,8 @@ public class SectorController {
 
     @PutMapping("/admin/sector")
     public ResponseEntity<Sector> update(@RequestBody Sector sector) {
-        Sector existingSector = sectorRepository.findByUuid(sector.getUuid());
-        if (existingSector != null) {
+        if (sector.getUuid() != null) {
+            Sector existingSector = sectorRepository.findByUuid(sector.getUuid());
             sector.setUsers(existingSector.getUsers());
         }
         Sector response = sectorRepository.update(sector);
